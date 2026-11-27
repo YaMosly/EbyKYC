@@ -1,0 +1,120 @@
+<Window x:Class="Relay.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="EbyKYC" Width="1180" Height="790" MinWidth="875" MinHeight="590"
+        Style="{StaticResource RelayWindow}" Icon="relay.ico"
+        WindowStartupLocation="CenterScreen" Loaded="OnLoaded" Closed="OnClosed">
+  <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="248"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border Grid.Column="0" Background="#141B27" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0">
+      <Grid Margin="17,20,17,16">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+        <StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="3,0,0,27">
+            <Border Background="#234337" CornerRadius="11" Width="41" Height="41">
+              <TextBlock Text="›_" FontFamily="Consolas" FontSize="23" FontWeight="Bold" Foreground="{StaticResource Accent}"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-3,0,0"/>
+            </Border>
+            <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="EbyKYC" FontSize="23" FontWeight="SemiBold"/>
+              <TextBlock Text="by @marks_cc" FontSize="11" Foreground="{StaticResource Muted}"/>
+            </StackPanel>
+          </StackPanel>
+          <TextBlock Text="СЕАНСЫ" Margin="3,0,0,10" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Muted}"/>
+          <Button x:Name="DemoNav" Style="{StaticResource Action}" Click="OpenLive" HorizontalContentAlignment="Left"
+                  Padding="11,11" Margin="0,0,0,9">
+            <StackPanel Orientation="Horizontal" Width="187">
+              <TextBlock Text="◈" Foreground="{StaticResource Accent}" FontSize="15" Margin="0,0,9,0"/>
+              <TextBlock x:Name="LiveNavLabel" Text="Демосеанс" VerticalAlignment="Center"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+        <DockPanel Grid.Row="1" Margin="3,17,0,7" LastChildFill="True">
+          <Button x:Name="RefreshChats" DockPanel.Dock="Right" Content="↻" Style="{StaticResource Action}" Padding="7,2"
+                  Visibility="Collapsed" Click="RefreshChatList" ToolTip="Обновить чаты" AutomationProperties.Name="Обновить чаты"/>
+          <TextBlock Text="ЧАТЫ" Foreground="{StaticResource Muted}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </DockPanel>
+        <Grid Grid.Row="2">
+          <ListBox x:Name="ChatList" SelectionChanged="SelectChat" Background="Transparent" BorderThickness="0"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Чаты Claude Code">
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Margin" Value="0,0,0,3"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                      <Border x:Name="Row" Background="Transparent" CornerRadius="8" Padding="10,9">
+                        <ContentPresenter/>
+                      </Border>
+                      <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Row" Property="Background" Value="#1E2939"/></Trigger>
+                        <Trigger Property="IsSelected" Value="True"><Setter TargetName="Row" Property="Background" Value="#284337"/></Trigger>
+                      </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}"/>
+                  <TextBlock Text="{Binding Detail}" Foreground="{StaticResource Muted}" FontSize="11" Margin="0,3,0,0"
+                             TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="ChatListStatus" Foreground="{StaticResource Muted}" FontSize="12" Margin="4,10,3,0"
+                     TextWrapping="Wrap" VerticalAlignment="Top" IsHitTestVisible="False"/>
+        </Grid>
+      </Grid>
+    </Border>
+    <Grid Grid.Column="1" Margin="22,16,22,18">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/><RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <DockPanel Margin="0,0,0,12" LastChildFill="False">
+        <Button DockPanel.Dock="Right" Style="{StaticResource Primary}" x:Name="Connect"
+                Click="ConfigureSsh" VerticalAlignment="Center" Padding="13,7">
+          <TextBlock x:Name="ConnectLabel" Text="Подключить сервер" Foreground="#11291F"/>
+        </Button>
+      </DockPanel>
+      <Border Grid.Row="1" Background="#0C1119" BorderBrush="{StaticResource Line}" BorderThickness="1" CornerRadius="13">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="52"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <Border Background="#171F2B" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1"
+                  CornerRadius="12,12,0,0" Padding="14,0">
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Ellipse x:Name="Lamp" Fill="{StaticResource Accent}" Width="7" Height="7" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TerminalBadge" Text="ДЕМО" Foreground="{StaticResource Accent}" FontSize="10" FontWeight="SemiBold"
+                           Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TerminalTitle" Text="claude · demo" FontFamily="Consolas" FontSize="13"
+                           TextTrimming="CharacterEllipsis" MaxWidth="340" VerticalAlignment="Center"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="PauseButton" Content="Пауза" Style="{StaticResource Action}" Padding="10,5"
+                        Click="TogglePause" Margin="0,0,7,0"/>
+                <Button x:Name="RestartButton" Content="С начала" Style="{StaticResource Action}" Padding="10,5" Click="RestartDemo"/>
+                <Button x:Name="DisconnectButton" Content="Отключить" Style="{StaticResource Action}" Padding="10,5"
+                        Click="DisconnectSsh" Visibility="Collapsed"/>
+                <Button x:Name="ReconnectButton" Content="Повторить" Style="{StaticResource Action}" Padding="10,5"
+                        Click="ReconnectSsh" Visibility="Collapsed"/>
+                <Button x:Name="BackToLive" Content="К сеансу" Style="{StaticResource Action}" Padding="10,5"
+                        Click="OpenLive" Visibility="Collapsed"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+          <Grid Grid.Row="1" Margin="13,13,13,12">
+            <wv:WebView2 x:Name="Web" DefaultBackgroundColor="#0C1119"/>
+            <TextBlock x:Name="Startup" Text="Загрузка терминала…" Foreground="{StaticResource Muted}" TextWrapping="Wrap"
+                       VerticalAlignment="Top" Margin="6,9,6,0" IsHitTestVisible="False"/>
+          </Grid>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>
